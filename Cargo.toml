@@ -1,0 +1,20 @@
+[package]
+name = "cargo-vendor-add"
+description = "Add crates directly to a cargo vendor directly."
+homepage = "https://github.com/leighmcculloch/cargo-vendor-add"
+repository = "https://github.com/leighmcculloch/cargo-vendor-add"
+authors = ["Leigh McCulloch"]
+license = "Apache-2.0"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.63"
+
+[dependencies]
+clap = { version = "3.2.16", features = ["derive", "env"] }
+thiserror = "1.0.32"
+flate2 = "1.0.24"
+tar = "0.4.38"
+
+[dev_dependencies]
+assert_cmd = "2.0.4"
+assert_fs = "1.0.7"
