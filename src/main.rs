@@ -46,6 +46,9 @@ struct VendorAddCmd {
     /// Vendor directory path
     #[clap(long, parse(from_os_str))]
     vendor_path: std::path::PathBuf,
+    /// Enable verbose output
+    #[clap(long)]
+    verbose: bool,
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -64,7 +67,9 @@ enum Error {
 
 impl VendorAddCmd {
     pub fn run(&self) -> Result<(), Error> {
-        eprintln!("reading: {}", self.crate_.to_string_lossy());
+        if self.verbose {
+            eprintln!("reading: {}", self.crate_.to_string_lossy());
+        }
         let crate_ = File::open(&self.crate_).map_err(Error::OpeningCrate)?;
         let mut archive = Archive::new(GzDecoder::new(crate_));
         archive
@@ -78,17 +83,21 @@ impl VendorAddCmd {
                     let checksum_path = self
                         .vendor_path
                         .join(path.parent().unwrap().join(".cargo-checksum.json"));
-                    eprintln!("writing: {} (generated)", checksum_path.to_string_lossy());
+                    if self.verbose {
+                        eprintln!("writing: {} (generated)", checksum_path.to_string_lossy());
+                    }
                     fs::OpenOptions::new()
                         .create(true)
                         .write(true)
                         .open(checksum_path)
                         .map_err(Error::OpeningChecksumFile)?
-                        // TODO: Generate actual checksum file.
+                        // TODO: Append file checksum to actual checksum file.
                         .write_all(r#"{"files":{},"package":""}"#.as_bytes())
                         .map_err(Error::WritingChecksumFile)?;
                 }
-                eprintln!("writing: {}", self.vendor_path.join(path).to_string_lossy());
+                if self.verbose {
+                    eprintln!("writing: {}", self.vendor_path.join(path).to_string_lossy());
+                }
                 entry
                     .unpack_in(&self.vendor_path)
                     .map_err(Error::WritingToVendor)

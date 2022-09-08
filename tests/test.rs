@@ -28,6 +28,7 @@ name = "my"
 
     let mut cmd = Command::cargo_bin("cargo-vendor-add")?;
     cmd.arg("vendor-add");
+    cmd.arg("--verbose");
     cmd.arg("--crate").arg(crate_file.path());
     cmd.arg("--vendor-path").arg(vendor_dir.path());
     cmd.assert().success().stderr(format!(
